@@ -28,37 +28,26 @@ public class UserLoginUI {
     // ============================================================
     public void displayLoginForm() {
 
-        JFrame frame = new JFrame("User Login");
+        JFrame frame = new JFrame("CSIT314 | Interior Design Management System");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 12));
-        panel.setBorder(
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        );
-
+        JPanel page = com.csit314.ui.UiTheme.page("Welcome back", "Sign in to the Interior Design Management System");
+        JPanel panel = new JPanel(new GridLayout(4, 2, 12, 16));
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
         panel.add(new JLabel("User ID:"));
         userIDField = new JTextField();
         panel.add(userIDField);
-
         panel.add(new JLabel("Password:"));
         passwordField = new JPasswordField();
         panel.add(passwordField);
-
         panel.add(new JLabel("User Type:"));
-
         userTypeBox = new JComboBox<>(new String[]{
-            "User Admin",
-            "Interior Designer",
-            "Customer",
-            "Platform Management"
+            "User Admin", "Interior Designer", "Customer", "Platform Management"
         });
-
         panel.add(userTypeBox);
-
-        JButton button = new JButton("Login");
+        JButton button = com.csit314.ui.UiTheme.action("Sign in");
         panel.add(new JLabel());
         panel.add(button);
-
         button.addActionListener(e -> {
 
             if (login()) {
@@ -86,16 +75,16 @@ public class UserLoginUI {
 
                 // USER STORY: PLATFORM MANAGEMENT LOGIN
                 else if (userType == 4) {
-                    JOptionPane.showMessageDialog(
-                        null,
-                        "Platform Management menu not implemented yet."
-                    );
-                }
+                new com.csit314.platformmanager.PlatformManagerMenu(
+                new com.csit314.platformmanager.PlatformManager(userID)
+                 ).displayMenu();
+}
             }
         });
 
-        frame.add(panel);
-        frame.setSize(420, 260);
+        page.add(panel, java.awt.BorderLayout.CENTER);
+        frame.add(page);
+        frame.setSize(580, 400);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

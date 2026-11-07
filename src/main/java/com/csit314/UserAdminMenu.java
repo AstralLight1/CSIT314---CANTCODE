@@ -1,67 +1,25 @@
-
 package com.csit314;
-
-import java.awt.GridLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
+import javax.swing.*;
+import java.awt.*;
+import com.csit314.ui.UiTheme;
 public class UserAdminMenu {
-
-    // ============================================================
-    // USER STORY: MAIN MENU — Account and Profile Stories
-    // ============================================================
     public void displayMenu() {
-
-        JFrame frame = new JFrame("CSIT314 User Admin System");
+        JFrame frame = new JFrame("CSIT314 | User Admin");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JPanel panel = new JPanel(new GridLayout(3, 1, 15, 15));
-        panel.setBorder(BorderFactory.createEmptyBorder(35, 40, 35, 40));
-
-        JButton accounts = new JButton("Manage User Accounts");
-        JButton profiles = new JButton("Manage User Profiles");
-        JButton logout = new JButton("Logout");
-
-        // Manage User Accounts
-        accounts.addActionListener(e ->
-            new UserAccountUI().displayMenu()
-        );
-
-        // Manage User Profiles
-        profiles.addActionListener(e ->
-            new UserProfileUI().displayMenu()
-        );
-
-        // ========================================================
-        // USER STORY #2: LOGOUT
-        // ========================================================
+        JPanel page = UiTheme.page("User Admin", "Manage accounts and profiles");
+        JPanel grid = UiTheme.grid(3, 1);
+        JButton accounts = UiTheme.action("Manage User Accounts");
+        JButton profiles = UiTheme.action("Manage User Profiles");
+        JButton logout = UiTheme.action("Logout");
+        accounts.addActionListener(e -> new UserAccountUI().displayMenu());
+        profiles.addActionListener(e -> new UserProfileUI().displayMenu());
         logout.addActionListener(e -> {
-
-            int confirm = JOptionPane.showConfirmDialog(
-                frame,
-                "Are you sure you want to logout?",
-                "Confirm Logout",
-                JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                frame.dispose();
-                new UserLoginUI().displayLoginForm();
+            if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                frame.dispose(); new UserLoginUI().displayLoginForm();
             }
         });
-
-        panel.add(accounts);
-        panel.add(profiles);
-        panel.add(logout);
-
-        frame.add(panel);
-        frame.setSize(400, 300);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        grid.add(accounts); grid.add(profiles); grid.add(logout);
+        page.add(grid, BorderLayout.CENTER);
+        frame.add(page); frame.setSize(520, 400); frame.setLocationRelativeTo(null); frame.setVisible(true);
     }
 }
-
