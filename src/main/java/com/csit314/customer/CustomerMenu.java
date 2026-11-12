@@ -7,8 +7,6 @@ public class CustomerMenu {
     public void displayMenu() {
         JFrame frame = new JFrame("CSIT314 | Customer");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        JPanel page = UiTheme.page("Customer", "Discover and save interior design projects | " + CustomerSession.getUserID());
-        JPanel grid = UiTheme.grid(3, 2);
         String[] names = {"Search Projects", "View Project Details", "Save Project to Favourites", "Search Favourites", "View Favourites", "Logout"};
         Runnable[] actions = {
             () -> { String q = JOptionPane.showInputDialog(frame, "Project keyword:"); if (q != null) new ProjectSearchUI().searchProjects(q); },
@@ -18,11 +16,11 @@ public class CustomerMenu {
             () -> new FavouriteUI().viewFavouriteProjects(),
             () -> { if (new LogoutUI().logout()) { frame.dispose(); new com.csit314.UserLoginUI().displayLoginForm(); } }
         };
+        JButton[] buttons = new JButton[names.length];
         for (int i = 0; i < names.length; i++) {
             JButton button = UiTheme.action(names[i]); final int index = i;
-            button.addActionListener(e -> actions[index].run()); grid.add(button);
+            button.addActionListener(e -> actions[index].run()); buttons[i] = button;
         }
-        page.add(grid, BorderLayout.CENTER);
-        frame.add(page); frame.setSize(760, 480); frame.setLocationRelativeTo(null); frame.setVisible(true);
+        com.csit314.ui.ModernDashboard.show(frame, "Customer", "Discover and save interior design projects | " + CustomerSession.getUserID(), buttons);
     }
 }

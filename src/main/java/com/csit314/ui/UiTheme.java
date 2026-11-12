@@ -3,6 +3,7 @@ package com.csit314.ui;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import java.awt.event.*;
 
 /** Presentation-only Swing theme. No controllers, entities, SQL, or listeners are changed. */
 public final class UiTheme {
@@ -13,6 +14,8 @@ public final class UiTheme {
     private static final Color MUTED = new Color(99, 115, 135);
     private static final Color BORDER = new Color(213, 224, 237);
     private static final Color WHITE = Color.WHITE;
+
+    private static boolean listenerInstalled = false;
 
     public static void install() {
         Font regular = new Font("SansSerif", Font.PLAIN, 14);
@@ -50,6 +53,102 @@ public final class UiTheme {
         UIManager.put("OptionPane.background", BACKGROUND);
         UIManager.put("OptionPane.messageForeground", NAVY);
         UIManager.put("TabbedPane.selected", WHITE);
+        UIManager.put("OptionPane.background", BACKGROUND);
+        UIManager.put("OptionPane.messageForeground", NAVY);
+        UIManager.put("Button.select", new Color(216, 231, 250));
+        UIManager.put("TabbedPane.contentAreaColor", WHITE);
+        UIManager.put("TabbedPane.selected", WHITE);
+        UIManager.put("ToolTip.background", WHITE);
+        UIManager.put("ToolTip.foreground", NAVY);
+        if (!listenerInstalled) {
+            listenerInstalled = true;
+            Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
+                if (event instanceof WindowEvent windowEvent
+                        && windowEvent.getID() == WindowEvent.WINDOW_OPENED) {
+                    Window window = windowEvent.getWindow();
+                    SwingUtilities.invokeLater(() -> styleWindow(window));
+                }
+            }, AWTEvent.WINDOW_EVENT_MASK);
+        }
+
+    }
+
+    /** Apply presentation styling to every role's existing Swing screens and dialogs. */
+    private static void styleWindow(Window window) {
+        if (!(window instanceof JFrame || window instanceof JDialog)) return;
+        if (window instanceof JFrame frame) {
+            frame.getContentPane().setBackground(BACKGROUND);
+            if (frame.getWidth() < 420) frame.setMinimumSize(new Dimension(420, frame.getHeight()));
+        }
+        styleTree(window);
+        // Swing's JOptionPane dialogs are packed before WINDOW_OPENED fires.
+        // Our larger input/button borders change preferred sizes afterwards;
+        // repack dialogs so the OK/Cancel buttons never fall below the window.
+        if (window instanceof JDialog dialog) {
+            Point previousLocation = dialog.getLocation();
+            dialog.pack();
+            Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+            dialog.setSize(Math.min(dialog.getWidth(), screen.width - 40),
+                           Math.min(dialog.getHeight(), screen.height - 80));
+            dialog.setLocation(Math.max(0, Math.min(previousLocation.x, screen.width - dialog.getWidth())),
+                               Math.max(0, Math.min(previousLocation.y, screen.height - dialog.getHeight())));
+        } else {
+            window.revalidate();
+        }
+        window.repaint();
+    }
+
+    private static void styleTree(Component component) {
+        if (component instanceof JButton button) {
+            button.setFont(new Font("SansSerif", Font.BOLD, 13));
+            button.setFocusPainted(false);
+            button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            button.setOpaque(true);
+            button.setContentAreaFilled(true);
+            if (button.getBackground() instanceof javax.swing.plaf.ColorUIResource) {
+                button.setBackground(WHITE);
+                button.setForeground(NAVY);
+            }
+            if (button.getBorder() instanceof javax.swing.plaf.UIResource) {
+                button.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true),
+                    new EmptyBorder(9, 14, 9, 14)));
+            }
+        } else if (component instanceof JTextField field) {
+            styleInput(field);
+        } else if (component instanceof JTextArea area) {
+            area.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            area.setBackground(WHITE);
+            area.setForeground(NAVY);
+            if (area.getBorder() instanceof javax.swing.plaf.UIResource)
+                area.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true),
+                    new EmptyBorder(7, 9, 7, 9)));
+        } else if (component instanceof JTable table) {
+            table.setRowHeight(Math.max(table.getRowHeight(), 31));
+            table.setShowVerticalLines(false);
+            table.setGridColor(BORDER);
+            table.setSelectionBackground(new Color(221, 235, 252));
+            table.getTableHeader().setPreferredSize(new Dimension(0, 34));
+            table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
+        } else if (component instanceof JScrollPane scroll) {
+            scroll.getViewport().setBackground(WHITE);
+            if (scroll.getBorder() instanceof javax.swing.plaf.UIResource)
+                scroll.setBorder(new LineBorder(BORDER, 1, true));
+        } else if (component instanceof JComboBox<?> combo) {
+            combo.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            combo.setBackground(WHITE);
+        }
+        if (component instanceof Container container)
+            for (Component child : container.getComponents()) styleTree(child);
+    }
+
+    private static void styleInput(JTextField field) {
+        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        field.setBackground(WHITE);
+        field.setForeground(NAVY);
+        field.setCaretColor(BLUE);
+        if (field.getBorder() instanceof javax.swing.plaf.UIResource)
+            field.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true),
+                new EmptyBorder(7, 9, 7, 9)));
     }
 
     public static JPanel page(String title, String subtitle) {

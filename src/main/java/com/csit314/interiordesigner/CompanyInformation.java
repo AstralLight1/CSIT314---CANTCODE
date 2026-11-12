@@ -154,4 +154,27 @@ public class CompanyInformation {
             return false;
         }
     }
+    // Search Company Information — Entity (restrict results to the logged-in designer)
+    public static java.util.List<CompanyInformation> searchCompanyInformation(String designerID,String keyword){
+        java.util.List<CompanyInformation> results=new java.util.ArrayList<>();
+        String sql="""
+            SELECT "companyID", "designerUserID", "companyName", "companyDescription"
+            FROM public.company_information
+            WHERE "designerUserID" = ?
+              AND ("companyName" ILIKE ? OR "companyDescription" ILIKE ?)
+            ORDER BY "companyID"
+            """;
+        try(Connection c=IDDatabase.connect();PreparedStatement ps=c.prepareStatement(sql)){
+            ps.setString(1,designerID);
+            ps.setString(2,"%"+keyword+"%");
+            ps.setString(3,"%"+keyword+"%");
+            try(ResultSet rs=ps.executeQuery()){
+                while(rs.next())results.add(new CompanyInformation(
+                    rs.getInt("companyID"),rs.getString("designerUserID"),
+                    rs.getString("companyName"),rs.getString("companyDescription")));
+            }
+        }catch(SQLException e){System.err.println("Search company: "+e.getMessage());}
+        return results;
+    }
+
 }

@@ -8,7 +8,7 @@ public class UserProfileUI {
     // ============================================================
     public void displayMenu() {
         JFrame frame = new JFrame("User Admin System");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         JPanel panel = new JPanel(new GridLayout(5,1,12,12));
         panel.setBorder(BorderFactory.createEmptyBorder(25,35,25,35));
         for (String name : new String[]{"Create User Profile", "View User Profile", "Update User Profile", "Suspend User Profile", "Search User Profile"}) {

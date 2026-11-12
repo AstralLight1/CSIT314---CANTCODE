@@ -9,8 +9,6 @@ public class InteriorDesignerMenu {
     public void displayMenu() {
         JFrame frame = new JFrame("CSIT314 | Interior Designer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel page = UiTheme.page("Interior Designer", "Signed in as " + account.getUserID());
-        JPanel grid = UiTheme.grid(5, 1);
         JButton company = UiTheme.action("Manage Company Information");
         JButton current = UiTheme.action("Manage Current Projects");
         JButton past = UiTheme.action("Manage Past Projects");
@@ -21,8 +19,6 @@ public class InteriorDesignerMenu {
         past.addActionListener(e -> new PastProjectUI(account.getUserID()).displayMenu());
         statistics.addActionListener(e -> new ProjectStatisticsUI(account.getUserID()).viewProjectStatistics());
         logout.addActionListener(e -> new LogoutUI().logout(frame, account));
-        for (JButton button : new JButton[]{company, current, past, statistics, logout}) grid.add(button);
-        page.add(grid, BorderLayout.CENTER);
-        frame.add(page); frame.setSize(560, 530); frame.setLocationRelativeTo(null); frame.setVisible(true);
+        com.csit314.ui.ModernDashboard.show(frame, "Interior Designer", "Signed in as " + account.getUserID(), new JButton[]{company, current, past, statistics, logout});
     }
 }
