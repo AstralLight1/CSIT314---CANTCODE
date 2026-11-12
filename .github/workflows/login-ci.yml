@@ -1,0 +1,35 @@
+
+name: User Admin Login CI/CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Compile and run tests
+        run: mvn -B clean verify
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: CSIT314-Application
+          path: target/*.jar
+          if-no-files-found: error
